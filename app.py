@@ -36,7 +36,7 @@ USERS = {
 # EMAIL CONFIG (YAHOO)
 # =====================================================
 EMAIL_EXPEDITEUR = "moubarak1994@yahoo.fr"
-EMAIL_PASSWORD = "kilfojnaujqgbaex"   # ⚠️ mot de passe d’application
+EMAIL_PASSWORD = "kilfojnaujqgbaex"   # mot de passe d’application
 EMAIL_ASSISTANT_SOCIAL = "ibrahim.madougou@yahoo.fr"
 
 def envoyer_email(destinataire, sujet, message):
@@ -57,7 +57,7 @@ def envoyer_email(destinataire, sujet, message):
 # DATABASE
 # =====================================================
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -125,15 +125,21 @@ def login_page(request: Request):
 def login(username: str = Form(...), password: str = Form(...)):
     user = USERS.get(username)
     if user and user["password"] == password:
-        return RedirectResponse(f"/{user['role']}?user={username}", status_code=302)
-    return RedirectResponse("/", status_code=302)
+        return RedirectResponse(
+            url=f"/{user['role']}?user={username}",
+            status_code=302
+        )
+    return RedirectResponse(url="/", status_code=302)
 
 # =====================================================
 # ASSISTANT SOCIAL
 # =====================================================
 @app.get("/assistant_social", response_class=HTMLResponse)
 def assistant_social(request: Request, user: str):
-    return templates.TemplateResponse("assistant_social.html", {"request": request, "user": user})
+    return templates.TemplateResponse(
+        "assistant_social.html",
+        {"request": request, "user": user}
+    )
 
 @app.post("/assistant_social/ajouter")
 def ajouter_dossier(
@@ -146,14 +152,25 @@ def ajouter_dossier(
 ):
     conn = get_db()
     conn.execute("""
-        INSERT INTO dossiers VALUES (NULL,?,?,?,?,?,'EN_ATTENTE',?,?)
+        INSERT INTO dossiers
+        (nom, age, type_cancer, situation_sociale, urgent, statut, created_by, created_at)
+        VALUES (?, ?, ?, ?, ?, 'EN_ATTENTE', ?, ?)
     """, (
-        nom, age, type_cancer, situation_sociale, urgent,
-        user, datetime.now().strftime("%Y-%m-%d %H:%M")
+        nom,
+        age,
+        type_cancer,
+        situation_sociale,
+        urgent,
+        user,
+        datetime.now().strftime("%Y-%m-%d %H:%M")
     ))
     conn.commit()
     conn.close()
-    return RedirectResponse(f"/assistant_social/historique?user={user}", 302)
+
+    return RedirectResponse(
+        url=f"/assistant_social/historique?user={user}",
+        status_code=302
+    )
 
 @app.get("/assistant_social/historique", response_class=HTMLResponse)
 def historique_social(request: Request, user: str):
@@ -163,6 +180,7 @@ def historique_social(request: Request, user: str):
         (user,)
     ).fetchall()
     conn.close()
+
     return templates.TemplateResponse(
         "assistant_social_historique.html",
         {"request": request, "user": user, "dossiers": dossiers}
@@ -181,21 +199,30 @@ def secretaire(request: Request, user: str):
         "SELECT * FROM rendez_vous ORDER BY date DESC"
     ).fetchall()
     conn.close()
+
     return templates.TemplateResponse(
         "secretaire.html",
         {"request": request, "user": user, "dossiers": dossiers, "rdv": rdv}
     )
 
 @app.post("/secretaire/rdv")
-def ajouter_rdv(titre: str = Form(...), date: str = Form(...), user: str = Form(...)):
+def ajouter_rdv(
+    titre: str = Form(...),
+    date: str = Form(...),
+    user: str = Form(...)
+):
     conn = get_db()
     conn.execute(
-        "INSERT INTO rendez_vous VALUES (NULL,?,?,?)",
+        "INSERT INTO rendez_vous (titre, date, acteur) VALUES (?, ?, ?)",
         (titre, date, user)
     )
     conn.commit()
     conn.close()
-    return RedirectResponse(f"/secretaire?user={user}", 302)
+
+    return RedirectResponse(
+        url=f"/secretaire?user={user}",
+        status_code=302
+    )
 
 # =====================================================
 # MEDECIN
@@ -208,6 +235,7 @@ def medecin(request: Request, user: str):
         (user,)
     ).fetchall()
     conn.close()
+
     return templates.TemplateResponse(
         "medecin.html",
         {"request": request, "user": user, "depistages": depistages}
@@ -222,14 +250,23 @@ def ajouter_depistage(
 ):
     conn = get_db()
     conn.execute("""
-        INSERT INTO depistages VALUES (NULL,?,?,?,?,?)
+        INSERT INTO depistages
+        (patient, type_depistage, resultat, medecin, created_at)
+        VALUES (?, ?, ?, ?, ?)
     """, (
-        patient, type_depistage, resultat, user,
+        patient,
+        type_depistage,
+        resultat,
+        user,
         datetime.now().strftime("%Y-%m-%d %H:%M")
     ))
     conn.commit()
     conn.close()
-    return RedirectResponse(f"/medecin?user={user}", 302)
+
+    return RedirectResponse(
+        url=f"/medecin?user={user}",
+        status_code=302
+    )
 
 # =====================================================
 # SG
@@ -244,10 +281,18 @@ def sg(request: Request, user: str):
         "rdv": conn.execute("SELECT * FROM rendez_vous ORDER BY date DESC").fetchall()
     }
     conn.close()
-    return templates.TemplateResponse("sg.html", {"request": request, "user": user, **data})
+
+    return templates.TemplateResponse(
+        "sg.html",
+        {"request": request, "user": user, **data}
+    )
 
 @app.post("/sg/statut")
-def changer_statut(dossier_id: int = Form(...), statut: str = Form(...), user: str = Form(...)):
+def changer_statut(
+    dossier_id: int = Form(...),
+    statut: str = Form(...),
+    user: str = Form(...)
+):
     conn = get_db()
 
     dossier = conn.execute(
@@ -269,7 +314,10 @@ def changer_statut(dossier_id: int = Form(...), statut: str = Form(...), user: s
             f"Le dossier du patient {dossier['nom']} a été {statut}."
         )
 
-    return RedirectResponse(f"/sg?user={user}", 302)
+    return RedirectResponse(
+        url=f"/sg?user={user}",
+        status_code=302
+    )
 
 @app.post("/sg/partenariat")
 def ajouter_partenariat(
@@ -280,12 +328,16 @@ def ajouter_partenariat(
 ):
     conn = get_db()
     conn.execute(
-        "INSERT INTO partenariats VALUES (NULL,?,?,?,?)",
+        "INSERT INTO partenariats (nom, type, contact, created_at) VALUES (?, ?, ?, ?)",
         (nom, type, contact, datetime.now().strftime("%Y-%m-%d"))
     )
     conn.commit()
     conn.close()
-    return RedirectResponse(f"/sg?user={user}", 302)
+
+    return RedirectResponse(
+        url=f"/sg?user={user}",
+        status_code=302
+    )
 
 # =====================================================
 # PRESIDENTE
@@ -300,10 +352,14 @@ def presidente(request: Request, user: str):
         "rdv": conn.execute("SELECT * FROM rendez_vous ORDER BY date DESC").fetchall()
     }
     conn.close()
-    return templates.TemplateResponse("presidente.html", {"request": request, "user": user, **data})
+
+    return templates.TemplateResponse(
+        "presidente.html",
+        {"request": request, "user": user, **data}
+    )
 
 # =====================================================
-# API SYNC – TEMPS RÉEL
+# API SYNC
 # =====================================================
 @app.get("/api/sync")
 def api_sync():
