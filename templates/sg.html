@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Secrétaire Général – LISCA</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>SG – LISCA</h2>
+        <ul>
+            <li>📁 Dossiers</li>
+            <li>🧑‍⚕️ Dépistages</li>
+            <li>🤝 Partenariats</li>
+            <li>📅 Rendez-vous</li>
+            <li>📄 Rapport PDF</li>
+        </ul>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+        <div class="topbar">
+            <h1>Tableau de bord – SG</h1>
+            <div>{{ user }}</div>
+        </div>
+
+        <!-- DOSSIERS -->
+        <div class="panel">
+            <h2>Dossiers patients</h2>
+            <table>
+                <tr>
+                    <th>Patient</th>
+                    <th>Cancer</th>
+                    <th>Urgent</th>
+                    <th>Statut</th>
+                    <th>Action</th>
+                </tr>
+                {% for d in dossiers %}
+                <tr>
+                    <td>{{ d.nom }}</td>
+                    <td>{{ d.type_cancer }}</td>
+                    <td>{{ d.urgent }}</td>
+                    <td>{{ d.statut }}</td>
+                    <td>
+                        {% if d.statut == "EN_ATTENTE" %}
+                        <form method="post" action="/sg/statut" style="display:inline;">
+                            <input type="hidden" name="dossier_id" value="{{ d.id }}">
+                            <input type="hidden" name="user" value="{{ user }}">
+                            <input type="hidden" name="statut" value="VALIDE">
+                            <button>✅ Valider</button>
+                        </form>
+                        <form method="post" action="/sg/statut" style="display:inline;">
+                            <input type="hidden" name="dossier_id" value="{{ d.id }}">
+                            <input type="hidden" name="user" value="{{ user }}">
+                            <input type="hidden" name="statut" value="REJETE">
+                            <button>❌ Rejeter</button>
+                        </form>
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- DEPISTAGES -->
+        <div class="panel" style="margin-top:30px;">
+            <h2>Dépistages (Médecins)</h2>
+            <table>
+                <tr>
+                    <th>Patient</th>
+                    <th>Type</th>
+                    <th>Résultat</th>
+                    <th>Médecin</th>
+                </tr>
+                {% for d in depistages %}
+                <tr>
+                    <td>{{ d.patient }}</td>
+                    <td>{{ d.type_depistage }}</td>
+                    <td>{{ d.resultat }}</td>
+                    <td>{{ d.medecin }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- PARTENARIATS -->
+        <div class="panel" style="margin-top:30px;">
+            <h2>Partenariats</h2>
+
+            <form method="post" action="/sg/partenariat">
+                <input type="hidden" name="user" value="{{ user }}">
+                <input type="text" name="nom" placeholder="Nom du partenaire" required>
+                <input type="text" name="type" placeholder="Type (ONG, État, Clinique…)" required>
+                <input type="text" name="contact" placeholder="Contact" required>
+                <button type="submit">➕ Ajouter</button>
+            </form>
+
+            <table style="margin-top:15px;">
+                <tr>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Contact</th>
+                </tr>
+                {% for p in partenariats %}
+                <tr>
+                    <td>{{ p.nom }}</td>
+                    <td>{{ p.type }}</td>
+                    <td>{{ p.contact }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- RENDEZ-VOUS -->
+        <div class="panel" style="margin-top:30px;">
+            <h2>Rendez-vous</h2>
+            <table>
+                <tr>
+                    <th>Titre</th>
+                    <th>Date</th>
+                    <th>Créé par</th>
+                </tr>
+                {% for r in rdv %}
+                <tr>
+                    <td>{{ r.titre }}</td>
+                    <td>{{ r.date }}</td>
+                    <td>{{ r.acteur }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- PDF -->
+        <div class="panel" style="margin-top:30px; text-align:right;">
+            <a href="/rapport/pdf" target="_blank">
+                📄 Télécharger le rapport global PDF
+            </a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique – Assistant social</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>LISCA AI</h2>
+        <ul>
+            <li><a href="/assistant_social?user={{ user }}">➕ Nouveau dossier</a></li>
+            <li><a href="/assistant_social/historique?user={{ user }}">📂 Historique</a></li>
+        </ul>
+    </div>
+
+    <!-- CONTENU -->
+    <div class="content">
+        <h1>Historique de mes dossiers</h1>
+
+        {% if dossiers %}
+        <table>
+            <tr>
+                <th>Patient</th>
+                <th>Âge</th>
+                <th>Cancer</th>
+                <th>Urgent</th>
+                <th>Statut</th>
+                <th>Date</th>
+            </tr>
+            {% for d in dossiers %}
+            <tr>
+                <td>{{ d[1] }}</td>
+                <td>{{ d[2] }}</td>
+                <td>{{ d[3] }}</td>
+                <td>
+                    {% if d[4] == 1 %}
+                        <span style="color:red;font-weight:bold;">Oui</span>
+                    {% else %}
+                        Non
+                    {% endif %}
+                </td>
+                <td>{{ d[5] }}</td>
+                <td>{{ d[6] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            <p>Aucun dossier créé pour le moment.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>

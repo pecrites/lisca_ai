@@ -1,0 +1,27 @@
+<form method="post" action="/assistant_social/ajouter">
+
+    <input type="hidden" name="user" value="{{ user }}">
+
+    <label>Nom du patient</label>
+    <input type="text" name="nom" required>
+
+    <label>Âge</label>
+    <input type="number" name="age" required>
+
+    <label>Type de cancer</label>
+    <select name="cancer">
+        <option>Cancer du sein</option>
+        <option>Cancer du col de l’utérus</option>
+    </select>
+
+    <label>Situation sociale</label>
+    <textarea name="situation" required></textarea>
+
+    <label>Cas urgent ?</label>
+    <select name="urgence">
+        <option value="0">Non</option>
+        <option value="1">Oui</option>
+    </select>
+
+    <button type="submit">Enregistrer</button>
+</form>

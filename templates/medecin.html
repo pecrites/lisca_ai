@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Espace Médecin – LISCA</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>LISCA – Médecin</h2>
+        <ul>
+            <li>🩺 Dépistages</li>
+            <li>📄 Historique</li>
+        </ul>
+    </div>
+
+    <!-- CONTENU -->
+    <div class="content">
+        <div class="topbar">
+            <h1>Module Dépistage</h1>
+            <div>Médecin : <strong>{{ user }}</strong></div>
+        </div>
+
+        <!-- FORMULAIRE -->
+        <div class="panel">
+            <h2>Ajouter un dépistage</h2>
+
+            <form method="post" action="/medecin/ajouter">
+
+                <input type="hidden" name="user" value="{{ user }}">
+
+                <label>Nom du patient</label><br>
+                <input type="text" name="patient" required><br><br>
+
+                <label>Type de dépistage</label><br>
+                <select name="type_depistage" required>
+                    <option value="">-- Choisir --</option>
+                    <option value="Cancer du sein">Cancer du sein</option>
+                    <option value="Cancer du col">Cancer du col</option>
+                    <option value="Autre">Autre</option>
+                </select><br><br>
+
+                <label>Résultat</label><br>
+                <textarea name="resultat" required></textarea><br><br>
+
+                <button type="submit">➕ Ajouter</button>
+            </form>
+        </div>
+
+        <!-- HISTORIQUE -->
+        <div class="panel" style="margin-top:30px;">
+            <h2>Historique des dépistages</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Dépistage</th>
+                        <th>Résultat</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for d in depistages %}
+                    <tr>
+                        <td>{{ d["patient"] }}</td>
+                        <td>{{ d["type_depistage"] }}</td>
+                        <td>{{ d["resultat"] }}</td>
+                        <td>{{ d["created_at"] }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

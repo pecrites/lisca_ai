@@ -1,0 +1,108 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f8;
+}
+
+.layout {
+    display: flex;
+    height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    background: #1f2937;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-bottom: 30px;
+    font-size: 22px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 12px 10px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.sidebar li:hover {
+    background: #374151;
+}
+
+/* CONTENU */
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* CARTES KPI */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.card p {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.card.urgent {
+    border-left: 6px solid #dc2626;
+}
+
+/* PANELS */
+.panel {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.panel h2 {
+    margin-bottom: 15px;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+    background: #f9fafb;
+    text-align: left;
+}
